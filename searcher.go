@@ -31,7 +31,11 @@ func NewSovaSearcherWithAccessToken(url string, caPem *string, domainName *strin
 	var err error
 
 	if caPem != nil && domainName != nil {
-		certPool := x509.NewCertPool()
+		certPool, _ := x509.SystemCertPool()
+		if certPool == nil {
+			certPool = x509.NewCertPool()
+		}
+
 		if ok := certPool.AppendCertsFromPEM([]byte(*caPem)); !ok {
 			return nil, errors.New("failed to parse CA certificate")
 		}

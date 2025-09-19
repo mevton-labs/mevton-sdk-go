@@ -27,7 +27,11 @@ func NewAuthClient(authUrl string, privateKey []byte, caPem *string, domainName 
 	var err error
 
 	if caPem != nil && domainName != nil {
-		certPool := x509.NewCertPool()
+		certPool, _ := x509.SystemCertPool()
+		if certPool == nil {
+			certPool = x509.NewCertPool()
+		}
+
 		if !certPool.AppendCertsFromPEM([]byte(*caPem)) {
 			return nil, fmt.Errorf("failed to parse CA certificate")
 		}
